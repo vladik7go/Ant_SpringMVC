@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="HelloProject" default="main" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="AntSpringMVC1" default="main" basedir=".">
 	<description>
 		Create a Spring MVC (WAR) with Ant build script
 	</description>
@@ -56,7 +56,7 @@
 		<!-- ivy get dependencies and put it in ${lib.dir} -->
 		<ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]" conf="runtime" />
 
-		<war destfile="${target.dir}/helloproject.war" webxml="${web.dir}/WEB-INF/web.xml">
+		<war destfile="${target.dir}/AntSpringMVC1.war" webxml="${web.dir}/WEB-INF/web.xml">
 			
 			<webinf dir="${web.dir}/WEB-INF" />
 			<lib dir="${lib.dir}" />
