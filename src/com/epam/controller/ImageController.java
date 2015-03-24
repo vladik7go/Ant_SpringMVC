@@ -3,13 +3,13 @@ package com.epam.controller;
 import java.io.File;
 import java.io.IOException;
 
-import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +38,7 @@ public class ImageController {
 
 		if (bindingResult.hasErrors()) {
 			System.out.println("errors!!!");
+			System.out.println("POST catch block: " + imageModel.getDescription());
 			return "createForm";
 		}
 
@@ -45,7 +46,14 @@ public class ImageController {
 
 		System.out.println("Description: " + imageModel.getDescription());
 		// ---- File receiving
-		validateImage(imageFile);
+
+		try {
+			validateImage(imageFile);
+		} catch (TechnicalException e) {
+			bindingResult.addError(new FieldError("imageModel", "description",
+					" Attached file should be JPG"));
+			return "createForm";
+		}
 		saveImage(imageModel.getDescription() + ".jpg", imageFile);
 		// ---
 
@@ -53,9 +61,10 @@ public class ImageController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String start(Model model) {
-		ImageModel imageModel = new ImageModel();
+	public String start(Model model, ImageModel imageModel) {
+
 		model.addAttribute("imageModel", imageModel);
+		System.out.println("GET: " + imageModel.getDescription());
 		return "createForm";
 
 	}

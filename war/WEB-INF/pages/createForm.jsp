@@ -18,7 +18,7 @@
 
 	<sf:form method="POST" enctype="multipart/form-data"
 		action="/AntSpringMVC1/images/create" modelAttribute="imageModel">
-		<sf:errors path="*" cssClass="error" />
+		
 		<br>
 		<label for="image_description"> Image description: </label>
 		<sf:input path="description" id="image_description" />
