@@ -2,6 +2,8 @@ package com.epam.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.validation.Valid;
 
@@ -38,15 +40,11 @@ public class ImageController {
 
 		if (bindingResult.hasErrors()) {
 			System.out.println("errors!!!");
-			System.out.println("POST catch block: " + imageModel.getDescription());
 			return "createForm";
 		}
-
 		model.addAttribute("description", imageModel.getDescription());
-
 		System.out.println("Description: " + imageModel.getDescription());
 		// ---- File receiving
-
 		try {
 			validateImage(imageFile);
 		} catch (TechnicalException e) {
@@ -56,29 +54,59 @@ public class ImageController {
 		}
 		saveImage(imageModel.getDescription() + ".jpg", imageFile);
 		// ---
-
 		return "createForm";
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String start(Model model, ImageModel imageModel) {
-
+	public String showList(Model model, ImageModel imageModel) {
+		ArrayList<String> listNames = new ArrayList<String>();
 		model.addAttribute("imageModel", imageModel);
 		System.out.println("GET: " + imageModel.getDescription());
+		File[] listFiles = getList();
+		for (File file2 : listFiles) {
+			listNames.add(file2.getName());
+			System.out.println(file2.getName());
+			
+		}
+		model.addAttribute("listNames", listNames);
+		return "list";
+
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/showCreateForm")
+	public String showCreateForm(Model model, ImageModel imageModel) {
+		ArrayList<String> listNames = new ArrayList<String>();
+		model.addAttribute("imageModel", imageModel);
+		System.out.println("GET: " + imageModel.getDescription());
+		File[] listFiles = getList();
+		for (File file2 : listFiles) {
+			listNames.add(file2.getName());
+			System.out.println(file2.getName());
+			
+		}
+		model.addAttribute("listNames", listNames);
 		return "createForm";
 
 	}
 
 	private void saveImage(String filename, MultipartFile imageFile) {
 		File file = new File("resources/" + filename);
-
 		System.out.println(file.getAbsolutePath().toString());
 		try {
 			FileUtils.writeByteArrayToFile(file, imageFile.getBytes());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public File[] getList() {
+		File file = new File("resources/");
+		System.out.println(file.getAbsolutePath().toString());
+		File[] listFiles = file.listFiles();
+		
+//		System.out.println(Arrays.toString(listFiles));
+		return listFiles;
 
 	}
 
