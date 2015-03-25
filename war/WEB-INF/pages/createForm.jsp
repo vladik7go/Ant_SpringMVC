@@ -15,6 +15,8 @@
 
 	------------------------------------
 	<br>
+	${success }
+	<br>
 
 	<!-- 	sf:errors path="*" cssClass="error" / -->
 
