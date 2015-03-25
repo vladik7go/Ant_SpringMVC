@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,7 +46,7 @@ public class ImageController {
 			@Valid ImageModel imageModel,
 			BindingResult bindingResult,
 			@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-			Model model) {
+			Model model, HttpServletRequest req) {
 		// If validation failed - return to create-form
 		if (bindingResult.hasErrors()) {
 			System.out.println("errors!!!");
@@ -67,7 +69,8 @@ public class ImageController {
 			// If image not JPG, or image already exist - return to create-form
 			return "createForm";
 		}
-		saveImage(imageModel.getDescription() + ".jpg", imageFile);
+		String realPath = req.getSession().getServletContext().getRealPath("/");
+		saveImage(realPath + "resources/" + imageModel.getDescription() + ".jpg", imageFile);
 		model.addAttribute("success", " Image successfuly saved");
 
 		// --- Finish of file receiving, validating, writing...
@@ -112,8 +115,8 @@ public class ImageController {
 		return "createForm";
 	}
 
-	private void saveImage(String filename, MultipartFile imageFile) {
-		File file = new File("resources/" + filename);
+	private void saveImage( String filename, MultipartFile imageFile) {
+		File file = new File(filename);
 		System.out.println(file.getAbsolutePath().toString());
 		try {
 			FileUtils.writeByteArrayToFile(file, imageFile.getBytes());
