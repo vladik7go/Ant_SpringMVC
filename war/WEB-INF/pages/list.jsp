@@ -11,12 +11,17 @@
 <body>
 
 	<h1>List of images</h1>
-
-	<c:forEach var="elem" items="${listNames}">
-		<c:out value="${ elem}" />
-		<br>
-	</c:forEach>
-
+	<table border="3">
+		<th>Image name:</th>
+		<th>View:</th>
+		<c:forEach var="elem" items="${mapNames}">
+			<tr>
+				<td><c:out value="${ elem.key} " /></td>
+				<td><img width="50" height="50" src="${ elem.value}"
+					alt="image link" /></td>
+			</tr>
+		</c:forEach>
+	</table>
 	<sf:form method="GET" action="/AntSpringMVC1/images/showCreateForm">
 		<input name="commit" type="submit" value="Add new image" />
 	</sf:form>

@@ -3,6 +3,8 @@ package com.epam.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -57,21 +59,25 @@ public class ImageController {
 		model.addAttribute("description", imageModel.getDescription());
 		System.out.println("Description: " + imageModel.getDescription());
 		// ---- Start of file receiving, validating, writing...
+		String realPath = req.getSession().getServletContext().getRealPath("/")
+				+ "resources/images/" + imageModel.getDescription() + ".jpg";
 		try {
 			// Validate file - should be *.jpg
 			validateImage(imageFile);
 			// Validate name of file - should not be duplicated
-			validateDuplicateFile(imageModel.getDescription() + ".jpg",
-					imageFile);
+			validateDuplicateFile(realPath);
 		} catch (TechnicalException e) {
 			bindingResult.addError(new FieldError("imageModel", "description",
 					e.getMessage()));
 			// If image not JPG, or image already exist - return to create-form
 			return "createForm";
 		}
-		String realPath = req.getSession().getServletContext().getRealPath("/");
-		saveImage(realPath + "resources/" + imageModel.getDescription() + ".jpg", imageFile);
+		String realURL = req.getScheme() + "://" + req.getServerName() + ":"
+				+ req.getServerPort() + req.getContextPath()
+				+ "/resources/images/" + imageModel.getDescription() + ".jpg";
+		saveImage(realPath, imageFile);
 		model.addAttribute("success", " Image successfuly saved");
+		model.addAttribute("linkToImage", realURL);
 
 		// --- Finish of file receiving, validating, writing...
 		return "createForm";
@@ -82,23 +88,17 @@ public class ImageController {
 	 * 
 	 * @param model
 	 * @param imageModel
-	 * @return mapping to list.jsp, and list of filenames(in the model`s
-	 *         attribute "listNames")
+	 * @return mapping to list.jsp, and Map of filenames(in the model`s
+	 *         attribute "mapNames")
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public String showList(Model model, ImageModel imageModel) {
-		ArrayList<String> listNames = new ArrayList<String>();
-		model.addAttribute("imageModel", imageModel);
+	public String showList(Model model, ImageModel imageModel,
+			HttpServletRequest req) {
+		Map<String, String> listMap;
 		System.out.println("GET: " + imageModel.getDescription());
-		// Create an array of files, extract filenames (without path) and put to
-		// the attribute "listNames"
-		File[] listFiles = getList();
-		for (File file2 : listFiles) {
-			listNames.add(file2.getName());
-			System.out.println(file2.getName());
-
-		}
-		model.addAttribute("listNames", listNames);
+		listMap = getMap(req);
+		// put Map to the attribute "mapNames"
+		model.addAttribute("mapNames", listMap);
 		return "list";
 
 	}
@@ -115,7 +115,7 @@ public class ImageController {
 		return "createForm";
 	}
 
-	private void saveImage( String filename, MultipartFile imageFile) {
+	private void saveImage(String filename, MultipartFile imageFile) {
 		File file = new File(filename);
 		System.out.println(file.getAbsolutePath().toString());
 		try {
@@ -127,19 +127,39 @@ public class ImageController {
 	}
 
 	/**
-	 * This method scan resources folder and create an array of existing files
-	 * (exclude directories)
+	 * This method scan resources/images/ folder and create a Map of existing
+	 * files
 	 * 
-	 * @return array of existing files (exclude directories)
+	 * @param req
+	 * @return Map (key=fileName, value=URL to file)
 	 */
-	public File[] getList() {
-		File file = new File("resources/");
+	public Map<String, String> getMap(HttpServletRequest req) {
+
+		// scan resources/images/ folder and create an array of existing files
+		String realPathFolder = req.getSession().getServletContext()
+				.getRealPath("/")
+				+ "resources/images/";
+		File file = new File(realPathFolder);
 		System.out.println(file.getAbsolutePath().toString());
+		System.out.println(req.getScheme() + "://" + req.getServerName() + ":"
+				+ req.getServerPort() + req.getContextPath());
 		File[] listFiles = file.listFiles();
+		// Create a map (key=fileName, value=URL to file)
+		HashMap<String, String> listMap = new HashMap<String, String>();
+		for (File file2 : listFiles) {
+			// listMap.put(file2.getName(), req.getSession().getServletContext()
+			// .getRealPath("/")
+			// + "resources/images/" + file2.getName());
+			listMap.put(
+					file2.getName(),
+					req.getScheme() + "://" + req.getServerName() + ":"
+							+ req.getServerPort() + req.getContextPath()
+							+ "/resources/images/" + file2.getName());
+			System.out.println(file2.getName());
 
-		// System.out.println(Arrays.toString(listFiles));
-		return listFiles;
+		}
 
+		return listMap;
 	}
 
 	public void validateImage(MultipartFile image) {
@@ -149,8 +169,8 @@ public class ImageController {
 
 	}
 
-	private void validateDuplicateFile(String filename, MultipartFile imageFile) {
-		File file = new File("resources/" + filename);
+	private void validateDuplicateFile(String filename) {
+		File file = new File(filename);
 		if (file.exists()) {
 			throw new TechnicalException("Image with this name already exist");
 		}

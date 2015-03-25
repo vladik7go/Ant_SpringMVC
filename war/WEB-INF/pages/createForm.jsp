@@ -14,8 +14,7 @@
 
 
 	------------------------------------
-	<br>
-	${success }
+	<br> ${success }
 	<br>
 
 	<!-- 	sf:errors path="*" cssClass="error" / -->
@@ -44,6 +43,10 @@
 	<sf:form method="GET" action="/AntSpringMVC1/images/">
 		<input name="commit" type="submit" value="Show list of images" />
 	</sf:form>
+	<br>
+	<c:if test="${!empty linkToImage}">
+		<img width="250" height="250" src="${ linkToImage}" alt="image link" />
+	</c:if>
 
 </body>
 </html>
