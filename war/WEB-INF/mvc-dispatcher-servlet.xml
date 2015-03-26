@@ -15,7 +15,7 @@
 
 	<mvc:resources mapping="/resources/**" location="/resources/" /> <!-- handle all requests to the static content -->
 
-	<context:component-scan base-package="com.epam.controller" />
+	<context:component-scan base-package="com.epam.controller, com.epam.service" />
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -26,6 +26,8 @@
 			<value>.jsp</value>
 		</property>
 	</bean>
+
+	<bean class="com.epam.service.SaveValidateServiceImpl"></bean>
 
 	<!-- <bean class="com.epam.model.ImageModel"> -->
 	<!-- <property name="description" value="444" /> -->

@@ -13,13 +13,23 @@ public class ImageModel {
 	private String description;
 
 	public ImageModel() {
-		// TODO Auto-generated constructor stub
+
 	}
 
+	/**
+	 * This method get description variable.
+	 * 
+	 * @return
+	 */
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 * This method set description variable.
+	 * 
+	 * @param description
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
