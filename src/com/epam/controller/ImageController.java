@@ -44,7 +44,7 @@ public class ImageController {
 	 * @return mapping to the createForm.jsp
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String receiveData(
+	public String createImage(
 			@Valid ImageModel imageModel,
 			BindingResult bindingResult,
 			@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
@@ -63,7 +63,7 @@ public class ImageController {
 				+ "resources/images/" + imageModel.getDescription() + ".jpg";
 		try {
 			// Validate file - should be *.jpg
-			validateImage(imageFile);
+			validateJPG(imageFile);
 			// Validate name of file - should not be duplicated
 			validateDuplicateFile(realPath);
 		} catch (TechnicalException e) {
@@ -92,7 +92,7 @@ public class ImageController {
 	 *         attribute "mapNames")
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public String showList(Model model, ImageModel imageModel,
+	public String showListOfImages(Model model, ImageModel imageModel,
 			HttpServletRequest req) {
 		Map<String, String> listMap;
 		System.out.println("GET: " + imageModel.getDescription());
@@ -100,7 +100,14 @@ public class ImageController {
 		// put Map to the attribute "mapNames"
 		model.addAttribute("mapNames", listMap);
 		return "list";
+	}
 
+	@RequestMapping(method = RequestMethod.GET, value = "/showImageById")
+	public String showImageById(Model model,
+			@RequestParam(value = "imageId", required = true) String imageId) {
+		System.out.println(imageId);
+		model.addAttribute("imageURL", imageId);
+		return "showImage";
 	}
 
 	/**
@@ -115,6 +122,12 @@ public class ImageController {
 		return "createForm";
 	}
 
+	/**
+	 * Save image to file system
+	 * 
+	 * @param filename
+	 * @param imageFile
+	 */
 	private void saveImage(String filename, MultipartFile imageFile) {
 		File file = new File(filename);
 		System.out.println(file.getAbsolutePath().toString());
@@ -133,7 +146,7 @@ public class ImageController {
 	 * @param req
 	 * @return Map (key=fileName, value=URL to file)
 	 */
-	public Map<String, String> getMap(HttpServletRequest req) {
+	private Map<String, String> getMap(HttpServletRequest req) {
 
 		// scan resources/images/ folder and create an array of existing files
 		String realPathFolder = req.getSession().getServletContext()
@@ -162,13 +175,23 @@ public class ImageController {
 		return listMap;
 	}
 
-	public void validateImage(MultipartFile image) {
+	/**
+	 * Validate on equivalence to JPG
+	 * 
+	 * @param image
+	 */
+	private void validateJPG(MultipartFile image) {
 		if (!image.getContentType().equals("image/jpeg")) {
 			throw new TechnicalException("Only JPG images are acceptable");
 		}
 
 	}
 
+	/**
+	 * Validate on uniqueness of image in target folder
+	 * 
+	 * @param filename
+	 */
 	private void validateDuplicateFile(String filename) {
 		File file = new File(filename);
 		if (file.exists()) {

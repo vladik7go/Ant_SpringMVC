@@ -13,12 +13,18 @@
 	<h1>List of images</h1>
 	<table border="3">
 		<th>Image name:</th>
-		<th>View:</th>
+		<th>Preview:</th>
+		<th>Show in dedicated window:</th>
 		<c:forEach var="elem" items="${mapNames}">
 			<tr>
 				<td><c:out value="${ elem.key} " /></td>
-				<td><img width="50" height="50" src="${ elem.value}"
+				<td><img width="50" src="${ elem.value}"
 					alt="image link" /></td>
+				<td><sf:form method="GET"
+						action="/AntSpringMVC1/images/showImageById">
+						<input name="imageId" type="hidden" value="${ elem.value}" />
+						<input name="button" type="submit" value="Show" />
+					</sf:form></td>
 			</tr>
 		</c:forEach>
 	</table>
