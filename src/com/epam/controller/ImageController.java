@@ -26,7 +26,7 @@ import com.epam.service.SaveValidateService;
 @Controller
 @RequestMapping("/images")
 public class ImageController {
-	private SaveValidateService saveValidateService;
+	SaveValidateService saveValidateService;
 
 	@Autowired
 	public void setSaveValidateService(SaveValidateService saveValidateService) {
