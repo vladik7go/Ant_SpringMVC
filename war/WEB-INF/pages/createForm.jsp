@@ -23,7 +23,7 @@
 
 
 	<sf:form method="POST" enctype="multipart/form-data"
-		action="/AntSpringMVC1/images/" modelAttribute="imageModel">
+		action="/AntSpringMVC1/images/create" modelAttribute="imageModel">
 
 		<br>
 		<label for="image_description"> Image description: </label>
