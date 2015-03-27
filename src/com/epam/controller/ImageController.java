@@ -38,7 +38,7 @@ public class ImageController {
 	 * @param model
 	 * @return String mapping to the createForm.jsp
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public String createImage(
 			@Valid ImageModel imageModel,
 			BindingResult bindingResult,
@@ -111,8 +111,9 @@ public class ImageController {
 	 * @param imageId
 	 * @return String mapping to the showImage.jsp
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "/showImageById")
-	public String showImageById(Model model,
+//	@RequestMapping(method = RequestMethod.GET, value = "/showImageById")
+	@RequestMapping(method = RequestMethod.GET, value = "${id}")
+	public String showImageById    Model model,
 			@RequestParam(value = "imageId", required = true) String imageId) {
 		System.out.println(imageId);
 		model.addAttribute("imageURL", imageId);
