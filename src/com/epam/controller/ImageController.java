@@ -33,6 +33,7 @@ public class ImageController {
 		this.saveValidateService = saveValidateService;
 	}
 
+	// asd
 	/**
 	 * This method execute POST requests for CREATING new image
 	 * 
